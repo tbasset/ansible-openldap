@@ -14,6 +14,7 @@
     owner: "{{ openldap_server_user }}"
     group: "{{ openldap_server_group }}"
     mode: "0755"
+
 - name: restart slapd
   listen: restart slapd
   ansible.builtin.service:
@@ -72,6 +73,7 @@
 #     owner: "{{ openldap_server_user }}"
 #     group: "{{ openldap_server_group }}"
 #     mode: 0755
+
 - name: restart_systemd_logind
   listen: restart_login_services
   ansible.builtin.service:

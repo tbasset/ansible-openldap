@@ -7,19 +7,17 @@ ldap_user_home_directory: "homedirs"
 openldap_clientconfig: "/etc/ldap.conf"
 #The ldif file
 openldap_server_ldif: domain.ldif
-
 openldap_server_dc: "dc={{ ',dc='.join( openldap_server_domain_name.split('.') ) }}"
-
 openldap_server_bind_dn: "cn=Manager,{{ openldap_server_dc }}"
 
 #### LDAP AUTOMOUNT CONFIG
-admin_ou: "ou=admin,{{ openldap_server_dc }}"
-groups_ou:     "ou=groups,{{ openldap_server_dc }}"
-users_ou:     "ou=users,{{ openldap_server_dc }}"
-automount_ou: "ou=automount,{{ admin_ou }}"
+admin_ou:       "ou=admin,{{ openldap_server_dc }}"
+groups_ou:      "ou=groups,{{ openldap_server_dc }}"
+users_ou:       "ou=users,{{ openldap_server_dc }}"
+automount_ou:   "ou=automount,{{ admin_ou }}"
 auto_master_ou: "ou=auto.master,{{ automount_ou }}"
-auto_data_ou: "ou=auto.data,{{ automount_ou }}"
-auto_home_ou: "ou=auto.home,{{ automount_ou }}"
+auto_data_ou:   "ou=auto.data,{{ automount_ou }}"
+auto_home_ou:   "ou=auto.home,{{ automount_ou }}"
 
 openldap_server_domain_name: "ldap.home.example.com"
 openldap_server_ip:

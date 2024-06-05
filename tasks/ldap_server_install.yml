@@ -5,7 +5,7 @@
     state: present
   when: ansible_os_family == 'RedHat'
 
-- name: Install the openldap and required Packages for Ubuntu
+- name: Install the openldap and required Packages for Debian
   ansible.builtin.apt:
     name: "{{ openldap_server_pkgs }}"
     state: present

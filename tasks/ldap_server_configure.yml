@@ -7,8 +7,8 @@
     owner: "{{ openldap_server_user }}"
     group: "{{ openldap_server_group }}"
   notify: slapd rebuild
-  when:
-    - openldap_server_enable_sshkeys
+  # when:
+  #   - openldap_server_enable_sshkeys
 
 - name: Copy samba ldap schema file
   ansible.builtin.copy:
@@ -18,8 +18,8 @@
     owner: "{{ openldap_server_user }}"
     group: "{{ openldap_server_group }}"
   notify: slapd rebuild
-  when:
-    - openldap_server_enable_samba
+  # when:
+  #   - openldap_server_enable_samba
 
 - name: Copy autofs schema file
   ansible.builtin.copy:
@@ -29,8 +29,8 @@
     owner: "{{ openldap_server_user }}"
     group: "{{ openldap_server_group }}"
   notify: slapd rebuild
-  when:
-    - openldap_server_enable_autofs
+  # when:
+  #   - openldap_server_enable_autofs
 
 - name: Check for ldap root password change
   ansible.builtin.copy:
@@ -203,7 +203,7 @@
     state: absent
   when: slapd_rebuild | default(False)
 
-# - name: restart slapd
+# - name: restart slapd (rebuild)
 #   service:
 #     name: slapd
 #     state: restarted
@@ -220,10 +220,12 @@
     recurse: true
   when: slapd_rebuild | default(False)
 
-- name: Rebuild slapd OLC Directory
-  ansible.builtin.shell: slaptest -f {{ openldap_server_app_path }}/slapd.conf -F {{ openldap_server_app_path }}/slapd.d
-  become_user: "{{ openldap_server_user }}"
-  when: slapd_rebuild | default(False)
+- name: Copy the template for creating base dn
+  ansible.builtin.template:
+    src: "{{ openldap_server_ldif }}"
+    dest: /tmp/
+    mode: "0755"
+  register: rootdn
 
 - name: Fix slapd.d permissions
   ansible.builtin.file:
@@ -233,20 +235,23 @@
     owner: "{{ openldap_server_user }}"
     group: "{{ openldap_server_group }}"
     mode: "0755"
-  when: slapd_rebuild | default(False)
+  # when: not slapd_rebuild | default(False)
 
-- name: Copy the template for creating base dn
-  ansible.builtin.template:
-    src: "{{ openldap_server_ldif }}"
-    dest: /tmp/
-    mode: "0755"
-  register: rootdn
+- name: Rebuild slapd OLC Directory
+  ansible.builtin.shell: slaptest -f {{ openldap_server_app_path }}/slapd.conf -F {{ openldap_server_app_path }}/slapd.d
+  become_user: "{{ openldap_server_user }}"
+  when: slapd_rebuild | default(False)
 
 - name: Print rootdn variable info for debugging
   ansible.builtin.debug:
     var: rootdn
     verbosity: 1
   when: rootdn is defined
+
+- name: assure slapd is started
+  service:
+    name: slapd
+    state: started
 
 - name: Add the base domain
   ansible.builtin.shell:

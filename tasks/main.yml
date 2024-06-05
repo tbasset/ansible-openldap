@@ -98,7 +98,7 @@
   tags:
     - openldap-server
 
-- name: Include LDAP server configration tasks
+- name: Include LDAP server configuration tasks
   ansible.builtin.include_tasks:
     file: ldap_server_configure.yml
   when: "'ldapservers' in group_names"
@@ -133,6 +133,7 @@
     - "'ldapservers' in group_names"
   tags:
     - openldap-automount
+    
 - name: Include ldap account configuration tasks
   ansible.builtin.include_tasks:
     file: ldap_account_configure.yml
